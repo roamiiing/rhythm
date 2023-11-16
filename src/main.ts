@@ -1,4 +1,5 @@
 import p5 from 'p5'
+import {KeyRequestButton} from "./button/ArrowButton.ts";
 
 const sketchParent = document.querySelector('#app')!
 
@@ -7,11 +8,20 @@ sketchParent.addEventListener('contextmenu', (e) => e.preventDefault())
 
 const PLAYER_SIZE = 128
 
+let previousTimer = performance.now()
+
 new p5((p: p5) => {
     let walkGif!: p5.Image
     let idleGif!: p5.Image
     let attack1Gif!: p5.Image
     let attack2Gif!: p5.Image
+
+
+    const arrow = new KeyRequestButton(p, {
+        key: 'a',
+        timeToPressMs: 3000,
+        side: 'left'
+    })
 
     p.preload = () => {
         walkGif = p.loadImage('assets/thief2_Walk.gif')
@@ -24,6 +34,8 @@ new p5((p: p5) => {
         p.createCanvas(sketchParent.clientWidth, window.innerHeight).parent(
             sketchParent,
         )
+
+        arrow.setup()
     }
 
     p.draw = () => {
@@ -61,5 +73,20 @@ new p5((p: p5) => {
 
         p.fill('#00000033')
         p.circle(p.mouseX, p.mouseY, 50)
+
+        const currentTimer = performance.now()
+        const delta = currentTimer - previousTimer
+        // console.log(delta)
+        previousTimer = currentTimer
+
+        // draw vertical line at center
+
+        p.stroke('#ff888833')
+        p.strokeWeight(3)
+        p.line(p.width / 2, p.height / 2 - 80, p.width / 2, p.height / 2 + 80)
+        p.stroke('#00000033')
+
+        arrow.draw(delta)
+
     }
 })
